@@ -1,19 +1,19 @@
-import os
 from dotenv import load_dotenv
-from openai import OpenAI
+from langchain_openai import ChatOpenAI
+from langchain_core.output_parsers import StrOutputParser
+
 
 load_dotenv()
 
-client = OpenAI(
-    api_key=os.environ.get("OPENAI_API_KEY"),
-)
+model = ChatOpenAI(model="gpt-4")
+parser = StrOutputParser()
 
-completion = client.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[
-        {"role": "system", "content": "You are a poetic assistant, skilled in explaining complex programming concepts with creative flair."},
-        {"role": "user", "content": "Compose a poem that explains the concept of recursion in programming."}
-    ]
-)
+from langchain_core.messages import HumanMessage, SystemMessage
 
-print(completion.choices[0].message)
+messages = [
+    SystemMessage(content="Translate the following from English into Italian"),
+    HumanMessage(content="hi!"),
+]
+
+result = model.invoke(messages)
+print(parser.invoke(result))
